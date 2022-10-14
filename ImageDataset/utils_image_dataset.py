@@ -1,0 +1,21 @@
+
+from .MNISTDataset import MnistDataset
+from .CIFAR100 import CIFAR100
+
+
+dic_image_dataset = {
+    "MNIST" : MnistDataset,
+    "CIFAR100" : CIFAR100,
+}
+
+def get_image_dataset(args_dict):
+    dataset_name = args_dict["dataset_name"]
+    if dataset_name in dic_image_dataset.keys():
+        current_dataset = dic_image_dataset[dataset_name] 
+    else :
+        raise ValueError(f"Dataset {dataset_name} not found")
+
+    
+    complete_dataset = current_dataset(root_dir = args_dict["root"], seed=args_dict["seed"], download = args_dict["download"],)
+
+    return complete_dataset
