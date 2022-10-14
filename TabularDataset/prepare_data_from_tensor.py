@@ -17,7 +17,7 @@ def get_dataset_from_tensor(args_dict,):
         if args_dict["problem_type"] == "classification" :
             Y = torch.tensor(Y, dtype=torch.int64)
             dim_output = len(np.unique(Y))
-        elif args_dict["problem_type"] == "regression" or args_dict["problem_type"] == "gaussian_generative":
+        elif args_dict["problem_type"] == "regression" or args_dict["problem_type"] == "likelihood":
             dim_output = 1
             Y = torch.tensor(Y, dtype=torch.float32)
         elif args_dict["problem_type"] == "not_needed":

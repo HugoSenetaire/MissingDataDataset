@@ -63,27 +63,29 @@ def mask_loader_tabular(X, Y, args, seed = None):
         Mask of generated missing values (True if the value is missing).
     """
     mask_Y = None
+    aux_X = X.flatten(1)
     if seed is not None :
         np.random.seed(seed = seed)
     if args['missing_mechanism'] == 'mcar':
-        mask = MCAR_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask = MCAR_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'dual_mask':
-        mask = DUAL_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask = DUAL_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'dual_mask_opposite':
-        mask = DUAL_mask_opposite(X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask = DUAL_mask_opposite(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'none':
         mask = torch.zeros_like(X)
     elif args['missing_mechanism'] == 'mar':
-        mask = MAR_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask = MAR_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'mnar_logistic':
-        mask = MNAR_mask_logistic(X, p = args['p_missing'], p_params = args['p_params'], exclude_inputs=args['exclude_inputs'])
+        mask = MNAR_mask_logistic(aux_X, p = args['p_missing'], p_params = args['p_params'], exclude_inputs=args['exclude_inputs'])
     elif args['missing_mechanism'] == 'mnar_self_logistic':
-        mask = MNAR_self_mask_logistic(X, p = args['p_missing'])
+        mask = MNAR_self_mask_logistic(aux_X, p = args['p_missing'])
     elif args['missing_mechanism'] == 'mnar_quantiles':
-        mask = MNAR_mask_quantiles(X, p = args['p_missing'], q = args["quantile"], p_obs =  args['p_obs'], cut=args['cut'], MCAR=False)
+        mask = MNAR_mask_quantiles(aux_X, p = args['p_missing'], q = args["quantile"], p_obs =  args['p_obs'], cut=args['cut'], MCAR=False)
     else:
         raise ValueError('Unknown missing mechanism for tabular data: {}'.format(args['missing_mechanism']))
 
+    mask = mask.reshape(X.shape)
     return mask, mask_Y
 
 
