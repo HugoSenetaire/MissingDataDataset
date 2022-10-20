@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 default_MNIST_transform = torchvision.transforms.Compose([
                                     torchvision.transforms.ToTensor(),
                                     # torchvision.transforms.Normalize(
-                                    #     (0.1307,), (0.3081,))
+                                        # (0.1307,), (0.3081,))
                                     ])
 
 
