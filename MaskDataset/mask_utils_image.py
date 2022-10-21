@@ -72,7 +72,7 @@ def mask_loader_image(X, Y, args, seed = None):
     elif args['missing_mechanism'] == 'none':
         mask = torch.zeros_like(X)[:,:1]
     else :
-        raise ValueError("Missing mechanism not recognized")
+        raise ValueError("Missing mechanism not recognized {}".format(args['missing_mechanism']))
     return mask, mask_Y
 
 

@@ -1,10 +1,11 @@
 import argparse
-from ImageDataset import *
-from TabularDataset import *
+from .ImageDataset import *
+from .TabularDataset import *
+import os
 
 list_dataset = DATASETS_TENSOR + list(dic_image_dataset.keys())
 
-def default_args_missingdatadataset(parser = None):
+def default_args_missingdatadataset(parser = None,root_default = None ):
     if parser is None :
         parser = argparse.ArgumentParser()
 
@@ -32,3 +33,8 @@ def default_args_missingdatadataset(parser = None):
                         help = "Used for mnar_quantiles Where the cut should be applied. For instance, if q=0.25 and cut='upper', \
                         then missing values will be generated in the upper quartiles of selected variables.")
     
+    if root_default is None :
+        raise ValueError("root_default should be provided")
+    parser.add_argument('--root', type=str, default= root_default,)
+
+    return parser
