@@ -70,7 +70,7 @@ def mask_loader_image(X, Y, args, seed = None):
     elif args['missing_mechanism'] == 'rectangle_mcar':
         mask = RectangleMCAR_Mask(X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'mar_mnist':
-        mask = MAR_MNIST_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask = MAR_MNIST_mask(X,)
     elif args['missing_mechanism'] == 'none':
         mask = torch.zeros_like(X)[:,:1]
     else :
@@ -212,19 +212,17 @@ def MAR_MNIST_mask(X, type = 'rows'):
 
     ber1 = torch.rand(n,)
     ber2 = torch.rand(n,)
-    pi_x = torch.sigmoid(X[:,:, dim[0]//2 :,].flatten(1).sum(-1)) + 0.3
+    pi_x = torch.sigmoid(X[:,:, dim[0]//2 :,].flatten(1).sum(-1)) / total_dim + 0.4
     idx_half = int(dim[0]//2)
     idx_quarter = int(dim[0]//4)
     h = (ber1 < pi_x).to(torch.int64) + (ber2 < pi_x).to(torch.int64)
 
     while(len(h.shape)<len(mask.shape)):
         h = h.unsqueeze(-1)
-    h.expand((n, 1, *dim))
-
-    mask[:,:, idx_half:,] = (h[:,:, idx_half:,] == 1)
-    mask[:,:, :idx_quarter,] = (h[:,:, :idx_quarter,] == 0)
-    mask[:,:, idx_half:,] = (h[:,:, idx_half:,] == 0)
-    mask[:,:, idx_quarter:,] = (h[:,:, idx_quarter:,] == 2)
+    h = h.expand(mask.shape)
+    mask[:,:, idx_half:, :] = False
+    mask[:,:, :idx_quarter,] = (h[:,:, :idx_quarter,] != 0)
+    mask[:,:, idx_quarter:idx_half,] = (h[:,:, idx_quarter:idx_half,] != 2)
 
     if type == 'columns':
         mask = mask.permute(0,1,3,2)
