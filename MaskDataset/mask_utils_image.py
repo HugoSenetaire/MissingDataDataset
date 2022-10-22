@@ -69,6 +69,8 @@ def mask_loader_image(X, Y, args, seed = None):
         mask = MCAR_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'rectangle_mcar':
         mask = RectangleMCAR_Mask(X, p = args['p_missing'], p_obs = args['p_obs'])
+    elif args['missing_mechanism'] == 'mar_mnist':
+        mask = MAR_MNIST_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'none':
         mask = torch.zeros_like(X)[:,:1]
     else :
@@ -184,5 +186,48 @@ def RectangleMCAR_Mask(X, p, p_obs,type = 'rows'):
             ber = ber.unsqueeze(-1)
         ber = ber.expand(n, 1, idx_rectangle, *dim[1:],)
         mask[:,:, :idx_rectangle, :] = ber < p
+
+    return mask
+
+def MAR_MNIST_mask(X, type = 'rows'):
+    """
+    Used for MNIST in MIWAE (https://proceedings.mlr.press/v97/mattei19a.html),
+    We consider a MAR version of MNIST where all bottom
+    halves of the pixels are observed. For each digit, either
+    the top half, top quarter, or second quarter, is missing
+    (depending on the number of white pixels in the bottom half).
+    """
+
+    if type == 'columns':
+        X = X.permute(0,1,3,2)
+
+    n, c, dim = X.shape[0], X.shape[1], X.shape[2:]
+    total_dim = np.prod(dim).astype(int)
+
+    to_torch = torch.is_tensor(X) ## output a pytorch tensor, or a numpy array
+    if not to_torch:
+        X = torch.from_numpy(X)
+    mask = torch.zeros(n, 1, *dim).bool() 
+
+
+    ber1 = torch.rand(n,)
+    ber2 = torch.rand(n,)
+    pi_x = torch.sigmoid(X[:,:, dim[0]//2 :,].flatten(1).sum(-1)) + 0.3
+    idx_half = int(dim[0]//2)
+    idx_quarter = int(dim[0]//4)
+    h = (ber1 < pi_x).to(torch.int64) + (ber2 < pi_x).to(torch.int64)
+
+    while(len(h.shape)<len(mask.shape)):
+        h = h.unsqueeze(-1)
+    h.expand((n, 1, *dim))
+
+    mask[:,:, idx_half:,] = (h[:,:, idx_half:,] == 1)
+    mask[:,:, :idx_quarter,] = (h[:,:, :idx_quarter,] == 0)
+    mask[:,:, idx_half:,] = (h[:,:, idx_half:,] == 0)
+    mask[:,:, idx_quarter:,] = (h[:,:, idx_quarter:,] == 2)
+
+    if type == 'columns':
+        mask = mask.permute(0,1,3,2)
+        X = X.permute(0,1,3,2)
 
     return mask
