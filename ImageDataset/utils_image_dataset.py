@@ -1,11 +1,13 @@
 
 from .MNISTDataset import MnistDataset
 from .CIFAR100 import CIFAR100
+from .CIFAR10 import CIFAR10
 
 
 dic_image_dataset = {
     "MNIST" : MnistDataset,
     "CIFAR100" : CIFAR100,
+    "CIFAR10" : CIFAR10,
 }
 
 def get_image_dataset(args_dict):
