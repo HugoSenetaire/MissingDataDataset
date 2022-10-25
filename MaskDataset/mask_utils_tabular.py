@@ -177,7 +177,7 @@ def DUAL_mask(X, p, p_obs):
     p : float
         Proportion of data points with no missing values.
     p_obs : float
-        Proportion of missing values to generate for data points which will have missing values.
+        Proportion of observed values for data points which will have missing values.
     Returns
     -------
     mask : torch.BoolTensor or np.ndarray (depending on type of X)
@@ -190,7 +190,7 @@ def DUAL_mask(X, p, p_obs):
     if not to_torch:
         X = torch.from_numpy(X)
 
-    mask = torch.zeros(n, d).bool() if to_torch else np.zeros((n, d)).astype(bool)
+    mask = torch.zeros(n, d).bool() if to_torch else np.zeros((n, d)).astype(bool) # Everything is observed here
 
     d_obs = max(int(p_obs * d),1) ## number of observed variables for data points with missing values
     d_na = d - d_obs ## number of missing variables for data points with missing values
@@ -200,15 +200,15 @@ def DUAL_mask(X, p, p_obs):
     idxs_nas = np.array([i for i in range(d) if i not in idxs_obs])
 
     ber = torch.rand(n).reshape(n, 1).expand(n, d_na)
-    mask[:, idxs_nas] = ber < p
+    mask[:, idxs_nas] = ber < p 
 
     return mask
 
 
 def DUAL_mask_opposite(X, p, p_obs):
     """
-    Missing mechanism with two types of mask. One where everything is observed and second one
-    where we miss p_obs percent of the variables. p corresponds to the number of items with no missing values.
+    Missing mechanism with two types of mask. One where p_obs features are observed and second one
+    where the other are observed. p corresponds to the number of items with the first method.
     Parameters
     ----------
     X : torch.DoubleTensor or np.ndarray, shape (n, d)
@@ -238,11 +238,13 @@ def DUAL_mask_opposite(X, p, p_obs):
     idxs_obs = np.random.choice(d, d_obs, replace=False)
     idxs_nas = np.array([i for i in range(d) if i not in idxs_obs])
 
-    ber = torch.rand(n).reshape(n, 1).expand(n, d)
+    ber = torch.rand(n)
+    h_obs = (ber < p).unsqueeze(1).expand(n, d_obs)
+    h_nas = (ber < p).unsqueeze(1).expand(n, d_na)
 
-    mask[:, idxs_nas] = ber[:,idxs_nas] < p #Observe index nas
-    mask[:, idxs_obs] = ber[:,idxs_obs] > p# Observe index obs
-
+    mask[:, idxs_nas] = h_nas #Observe index nas
+    mask[:, idxs_obs] = ~h_obs# Observe index obs
+    
 
     return mask
 
