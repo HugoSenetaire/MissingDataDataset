@@ -19,7 +19,7 @@ DATASETS_TENSOR = ['iris', 'wine', 'boston', 'california', 'parkinsons', \
             'wine_quality_red', 'wine_quality_white', 'moon', 'multivariate_gaussian']
 
 
-def tensor_dataset_loader(dataset):
+def tensor_dataset_loader(dataset, args):
     """
     Data loading utility for a subset of UCI ML repository datasets. Assumes 
     datasets are located in './datasets'. If the called for dataset is not in 
@@ -91,15 +91,14 @@ def tensor_dataset_loader(dataset):
         elif dataset == 'moon':
             data = fetch_moon()
         elif dataset == 'multivariate_gaussian':
-            data = fetch_multivariate_gaussian()
+            data = fetch_multivariate_gaussian(dim = args['dim'])
 
         X = data['data']
         Y = data['target']
         return X, Y
 
 
-def fetch_multivariate_gaussian(): # TODO @hhjs : Check with Toeplitz for instance to get easier covariance, par block ...
-    dim = 10
+def fetch_multivariate_gaussian(dim =10,): # TODO @hhjs : Check with Toeplitz for instance to get easier covariance, par block ...
     # diag = np.exp(np.random.normal(0, 1.0, (dim, )))
     # lower_triangle = np.random.normal(loc = 0, scale = 1.0, size = (int(dim*(dim-1)//2), ))
     # aux = np.diag(diag)

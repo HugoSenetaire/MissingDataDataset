@@ -9,7 +9,7 @@ import numpy as np
 
 
 def get_dataset_from_tensor(args_dict,):
-    data = tensor_dataset_loader(args_dict["dataset_name"])
+    data = tensor_dataset_loader(args_dict["dataset_name"], args=args_dict)
     data_true, Y = data[0], data[1]
     data_true = scale(data_true)
     data_true = torch.tensor(data_true, dtype=torch.float32).unsqueeze(1)

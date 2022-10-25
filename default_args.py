@@ -16,6 +16,7 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
     parser.add_argument('--dataset_name', type=str, default='MNIST',
                         choices=list_dataset,
                         help='The name of dataset')
+    parser.add_argument('--dim', type = int, default = 10, help='Dimension of the dataset for some tabular artificial data')
         ## Masking
     parser.add_argument('--missing_mechanism', type=str, default="mcar",
                         help='Choose between different type of missing mechanism')
