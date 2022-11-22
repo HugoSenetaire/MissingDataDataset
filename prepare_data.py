@@ -2,6 +2,7 @@ from .TabularDataset import get_dataset_from_tensor, DATASETS_TENSOR
 from .ImageDataset import dic_image_dataset, get_image_dataset
 from .MaskDataset import create_mask_dataset
 from .DatasetUtils import CompleteDatasets
+from .open_yaml import update_config_from_paths
 
 def get_vanilla_dataset(args_dict,):
     if args_dict["dataset_name"] in DATASETS_TENSOR :
@@ -19,6 +20,14 @@ def get_vanilla_dataset(args_dict,):
 def augment_dataset_with_mask(args_dict, complete_dataset,):
     complete_masked_dataset = create_mask_dataset(args_dict, complete_dataset, DATASETS_TENSOR=DATASETS_TENSOR, dic_image_dataset=dic_image_dataset,)
     return complete_masked_dataset
+
+
+def get_dataset(args_dict,):
+    args_dict = update_config_from_paths(args_dict,)
+    complete_dataset = get_vanilla_dataset(args_dict=args_dict)
+    complete_masked_dataset = augment_dataset_with_mask(complete_dataset, args_dict=args_dict)
+
+    return complete_dataset, complete_masked_dataset
 
 
 class InfiniteDataLoader(object):

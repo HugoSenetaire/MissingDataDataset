@@ -1,0 +1,15 @@
+
+# DATASET AND MASKING :
+    ## Dataset
+download : True
+dataset_name : 'MNIST'
+cste_imputation : 0.
+problem_type : 'classification'
+    ## Masking
+missing_mechanism : "mar_mnist"
+p_obs : None
+p_missing: None
+p_params : None
+exclude_input : None
+quantile : None
+cut : None

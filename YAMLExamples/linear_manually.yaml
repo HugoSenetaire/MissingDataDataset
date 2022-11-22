@@ -1,0 +1,19 @@
+
+# DATASET AND MASKING :
+    ## Dataset
+download : True
+dataset_name : 'linear_manually'
+cste_imputation : 0.
+problem_type : 'classification'
+dim : 100
+noise : 0.1
+min_weight : 0.1
+max_weight : 0.9
+    ## Masking
+missing_mechanism : "monotonic"
+p_obs : 0.8
+p_missing: 0.7
+p_params : None
+exclude_input : None
+quantile : None
+cut : None

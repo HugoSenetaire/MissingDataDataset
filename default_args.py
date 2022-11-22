@@ -17,7 +17,9 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
                         choices=list_dataset,
                         help='The name of dataset')
     parser.add_argument('--dim', type = int, default = 10, help='Dimension of the dataset for some tabular artificial data')
-        ## Masking
+    parser.add_argument('--noise_dataset', type = float, default = 0.1, help='Noise of the dataset for some tabular artificial data')
+    parser.add_argument('--problem_type', type = str, default = 'regression', choices=['regression', 'classification', 'likelihood'],
+                        help='Change the model according to the type of problem')        ## Masking
     parser.add_argument('--missing_mechanism', type=str, default="mcar",
                         help='Choose between different type of missing mechanism')
     parser.add_argument('--p_obs', type=float, default=0.0,
@@ -33,6 +35,10 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
     parser.add_argument('--cut', type=str, choices=['both', 'upper', 'lower'], default='both',
                         help = "Used for mnar_quantiles Where the cut should be applied. For instance, if q=0.25 and cut='upper', \
                         then missing values will be generated in the upper quartiles of selected variables.")
+    parser.add_argument('--place', type = str, default = 'last', choices=['last', 'first'],)
+    parser.add_argument('--min_weight', type = float, default = 0.1, help='Minimum weight for the linear generated dataset')
+    parser.add_argument('--max_weight', type = float, default = 1.0, help='Maximum weight for the linear generated dataset')
+    parser.add_argument('--yamldataset', type=str, default=None, help='YAML File path to override the dataset parameters')
     
     if root_default is None :
         raise ValueError("root_default should be provided")

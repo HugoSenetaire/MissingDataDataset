@@ -72,6 +72,8 @@ def mask_loader_tabular(X, Y, args, seed = None):
         mask = DUAL_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'dual_mask_opposite':
         mask = DUAL_mask_opposite(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
+    elif args['missing_mechanism'] == 'monotonic':
+        mask = Monotonic_MCAR_mask(aux_X, p_obs = args['p_obs'], place = args['place'])
     elif args['missing_mechanism'] == 'none':
         mask = torch.zeros_like(X)
     elif args['missing_mechanism'] == 'mar':
@@ -124,6 +126,33 @@ def quantile(X, q, dim=None):
 
 
 ##################### MISSING DATA MECHANISMS #############################
+
+def Monotonic_MCAR_mask(X, p_obs = 0.20, place = "last") :
+    """
+    Missing completely at random mechanism where mask are included into each other.
+
+    """
+    n, d = X.flatten(1).shape
+
+    to_torch = torch.is_tensor(X) ## output a pytorch tensor, or a numpy array
+    if not to_torch:
+        X = torch.from_numpy(X)
+
+    mask = torch.zeros(n, d).bool() if to_torch else np.zeros((n, d)).astype(bool)
+    max_missing = int((1-p_obs) * d)
+
+    unif = torch.rand(n,).unsqueeze(-1).expand(n, max_missing)
+    if place == "last":
+        int_place = torch.arange(1-1./(max_missing+1), 1./(max_missing+1)-1e-8, step = -1./(max_missing+1)).unsqueeze(0).expand(n, max_missing)
+        mask[:, -max_missing:] = unif > int_place
+    elif place == "first":
+        int_place = torch.arange(1./(max_missing+1), 1-1./(max_missing+1)+1e-8, step = 1./(max_missing+1)).unsqueeze(0).expand(n, max_missing)
+        mask[:, :max_missing] = unif > int_place
+    else:
+        raise ValueError("place should be either 'last' or 'first'")
+
+    mask = mask.unsqueeze(1)
+    return mask
 
 def MCAR_mask(X, p, p_obs):
     """
