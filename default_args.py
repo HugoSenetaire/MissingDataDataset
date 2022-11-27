@@ -36,6 +36,7 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
                         help = "Used for mnar_quantiles Where the cut should be applied. For instance, if q=0.25 and cut='upper', \
                         then missing values will be generated in the upper quartiles of selected variables.")
     parser.add_argument('--place', type = str, default = 'last', choices=['last', 'first'],)
+    parser.add_argument('--orientation', type = str, default = 'rows', choices=['columns', 'rows'], help='Orientation of the missing values, ie full rows or full columns')
     parser.add_argument('--min_weight', type = float, default = 0.1, help='Minimum weight for the linear generated dataset')
     parser.add_argument('--max_weight', type = float, default = 1.0, help='Maximum weight for the linear generated dataset')
     parser.add_argument('--yamldataset', type=str, default=None, help='YAML File path to override the dataset parameters')

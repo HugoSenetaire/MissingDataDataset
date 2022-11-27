@@ -102,7 +102,8 @@ def tensor_dataset_loader(dataset, args):
         return X, Y
 
 def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', min_weight = 1e-2, max_weight = 1e2, size = 10000):
-    weights = np.arange(min_weight, max_weight, (max_weight - min_weight)/dim) * (np.random.randint(2, size=dim)*2 - 1)
+    # weights = np.arange(min_weight, max_weight, (max_weight - min_weight)/dim) * (np.random.randint(2, size=dim)*2 - 1)
+    weights = np.logspace(np.log10(min_weight), np.log10(max_weight), dim) * (np.random.randint(2, size=dim)*2 - 1)
     X = np.random.rand(10000, dim)
     if problem_type == 'regression':
         Y = X @ weights + np.random.normal(0, noise, size = 10000)

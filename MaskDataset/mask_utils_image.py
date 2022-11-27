@@ -68,7 +68,7 @@ def mask_loader_image(X, Y, args, seed = None):
     if args['missing_mechanism'] == 'mcar':
         mask = MCAR_mask(X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'rectangle_mcar':
-        mask = RectangleMCAR_Mask(X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask = RectangleMCAR_Mask(X, p = args['p_missing'], p_obs = args['p_obs'], orientation = args['orientation'])
     elif args['missing_mechanism'] == 'mar_mnist':
         mask = MAR_MNIST_mask(X,)
     elif args['missing_mechanism'] == 'none':
@@ -162,10 +162,13 @@ def MCAR_mask(X, p, p_obs):
 
 
 
-def RectangleMCAR_Mask(X, p, p_obs,type = 'rows'):
+def RectangleMCAR_Mask(X, p, p_obs, orientation = 'rows'):
     """
     Missing completely at random but only with the top part of the image
     """
+
+    if orientation == 'columns':
+        X = X.permute(0,1,3,2)
     n, c, dim = X.shape[0], X.shape[1], X.shape[2:]
     total_dim = np.prod(dim).astype(int)
 
@@ -177,18 +180,16 @@ def RectangleMCAR_Mask(X, p, p_obs,type = 'rows'):
     mask = torch.zeros(n, 1, *dim).bool() if to_torch else np.zeros((n, 1, *dim)).astype(bool)
 
     ber = torch.rand(n,)
-    if type == 'columns':
-        idx_rectangle = int(p_obs * dim[-1]) ## Number of columns (ie : second dimension) that will all be observed
-        while(len(ber.shape)<len(mask.shape)):
-            ber = ber.unsqueeze(-1)
-        ber = ber.expand(n, 1, *dim[:-1], idx_rectangle)
-        mask[..., :idx_rectangle] = ber < p
-    elif type == 'rows':
-        idx_rectangle = int(p_obs * dim[0]) ## Number of rows (ie : first dimension) that will all be observed
-        while(len(ber.shape)<len(mask.shape)):
-            ber = ber.unsqueeze(-1)
-        ber = ber.expand(n, 1, idx_rectangle, *dim[1:],)
-        mask[:,:, :idx_rectangle, :] = ber < p
+    idx_rectangle = int((1-p_obs)*dim[0])
+    while(len(ber.shape)<len(mask.shape)):
+        ber = ber.unsqueeze(-1)
+    ber = ber.expand(n, 1, idx_rectangle, *dim[1:],)
+    mask[:,:, :idx_rectangle, :] = ber < p
+
+
+    if orientation == 'columns':
+        mask = mask.permute(0,1,3,2)
+        X = X.permute(0,1,3,2)
 
     return mask
 
