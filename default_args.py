@@ -39,7 +39,10 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
     parser.add_argument('--orientation', type = str, default = 'rows', choices=['columns', 'rows'], help='Orientation of the missing values, ie full rows or full columns')
     parser.add_argument('--min_weight', type = float, default = 0.1, help='Minimum weight for the linear generated dataset')
     parser.add_argument('--max_weight', type = float, default = 1.0, help='Maximum weight for the linear generated dataset')
+
+
     parser.add_argument('--yamldataset', type=str, default=None, help='YAML File path to override the dataset parameters')
+    parser.add_argument('--seed', type=int, default=12, help='Seed for the random number generator')
     
     if root_default is None :
         raise ValueError("root_default should be provided")
