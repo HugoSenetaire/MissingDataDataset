@@ -7,7 +7,11 @@ import torch
 
 def create_mask_dataset(args_dict, complete_dataset,DATASETS_TENSOR, dic_image_dataset,):
     create_mask = None
-    parameters = complete_dataset.parameters
+    try :
+        parameters = complete_dataset.parameters
+    except AttributeError as e:
+        print(e)
+        parameters = None
     dataset_name = args_dict["dataset_name"]
     if dataset_name in DATASETS_TENSOR :
         create_mask = mask_loader_tabular
