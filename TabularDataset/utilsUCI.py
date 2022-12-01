@@ -113,7 +113,6 @@ def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', mi
         Y = (np.sign(X @ weights + np.random.normal(0, noise, size = 10000)) + 1) / 2
     else:
         raise ValueError(f"Problem type not supported: {problem_type}")
-    print("MEAN X", X.mean(), "MEAN TARGET", Y.mean())
     parameters = {'weights': weights, 'bias': np.zeros_like(X[0])}
     return {'data': X, 'target': Y}, parameters 
 

@@ -23,9 +23,9 @@ def augment_dataset_with_mask(args_dict, complete_dataset,):
 
 
 def get_dataset(args_dict,):
-    args_dict = update_config_from_paths(args_dict,)
+    # args_dict = update_config_from_paths(args_dict,)
     complete_dataset = get_vanilla_dataset(args_dict=args_dict)
-    complete_masked_dataset = augment_dataset_with_mask(complete_dataset, args_dict=args_dict)
+    complete_masked_dataset = augment_dataset_with_mask(complete_dataset=complete_dataset, args_dict=args_dict)
 
     return complete_dataset, complete_masked_dataset
 
