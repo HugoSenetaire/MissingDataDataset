@@ -3,12 +3,13 @@ import torch
 from torch.utils.data import Dataset
 
 class CompleteDatasets():
-    def __init__(self, dataset_train, dataset_test, dataset_val, dim_input, dim_output):
+    def __init__(self, dataset_train, dataset_test, dataset_val, dim_input, dim_output, parameters = None):
         self.dataset_train = dataset_train
         self.dataset_test = dataset_test
         self.dataset_val = dataset_val
         self.dim_input = dim_input
         self.dim_output = dim_output
+        self.parameters = parameters
         
 
     def get_dim_input(self,):

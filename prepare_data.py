@@ -6,8 +6,8 @@ from .open_yaml import update_config_from_paths
 
 def get_vanilla_dataset(args_dict,):
     if args_dict["dataset_name"] in DATASETS_TENSOR :
-        dataset_train, dataset_test, dataset_val, dim_input, dim_output = get_dataset_from_tensor(args_dict,)
-        complete_dataset = CompleteDatasets(dataset_train, dataset_test, dataset_val, dim_input, dim_output)
+        dataset_train, dataset_test, dataset_val, dim_input, dim_output, parameters = get_dataset_from_tensor(args_dict,)
+        complete_dataset = CompleteDatasets(dataset_train, dataset_test, dataset_val, dim_input, dim_output, parameters=parameters)
     elif args_dict["dataset_name"] in dic_image_dataset :
         complete_dataset = get_image_dataset(args_dict,)
     else :

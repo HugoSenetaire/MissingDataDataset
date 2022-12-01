@@ -7,6 +7,7 @@ import torch
 
 def create_mask_dataset(args_dict, complete_dataset,DATASETS_TENSOR, dic_image_dataset,):
     create_mask = None
+    parameters = complete_dataset.parameters
     dataset_name = args_dict["dataset_name"]
     if dataset_name in DATASETS_TENSOR :
         create_mask = mask_loader_tabular
@@ -32,7 +33,6 @@ def create_mask_dataset(args_dict, complete_dataset,DATASETS_TENSOR, dic_image_d
                                             list_datasets[1],
                                             list_datasets[2],
                                             complete_dataset.get_dim_input(),
-                                            complete_dataset.get_dim_output())
-
-
+                                            complete_dataset.get_dim_output(),
+                                            parameters=parameters)
     return complete_masked_dataset

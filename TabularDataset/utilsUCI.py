@@ -41,6 +41,8 @@ def tensor_dataset_loader(dataset, args):
     """
     assert dataset in DATASETS_TENSOR , f"Dataset not supported: {dataset}"
 
+    parameters = None
+
     if dataset in DATASETS_TENSOR:
         if dataset == 'iris':
             data = load_iris()
@@ -93,13 +95,13 @@ def tensor_dataset_loader(dataset, args):
         elif dataset == 'moon':
             data = fetch_moon()
         elif dataset == 'multivariate_gaussian':
-            data = fetch_multivariate_gaussian(dim = args['dim'])
+            data, parameters = fetch_multivariate_gaussian(dim = args['dim'])
         elif dataset == 'linear_manually':
-            data = fetch_linear_manually(dim = args['dim'], noise = args['noise_dataset'], problem_type = args['problem_type'], min_weight=args['min_weight'], max_weight=args['max_weight'])
+            data, parameters = fetch_linear_manually(dim = args['dim'], noise = args['noise_dataset'], problem_type = args['problem_type'], min_weight=args['min_weight'], max_weight=args['max_weight'])
 
         X = data['data']
         Y = data['target']
-        return X, Y
+        return X, Y, parameters
 
 def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', min_weight = 1e-2, max_weight = 1e2, size = 10000):
     # weights = np.arange(min_weight, max_weight, (max_weight - min_weight)/dim) * (np.random.randint(2, size=dim)*2 - 1)
@@ -111,9 +113,9 @@ def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', mi
         Y = (np.sign(X @ weights + np.random.normal(0, noise, size = 10000)) + 1) / 2
     else:
         raise ValueError(f"Problem type not supported: {problem_type}")
-    print(weights)
-    print(X.mean(), Y.mean())
-    return {'data': X, 'target': Y}
+    print("MEAN X", X.mean(), "MEAN TARGET", Y.mean())
+    parameters = {'weights': weights, 'bias': np.zeros_like(X[0])}
+    return {'data': X, 'target': Y}, parameters 
 
 
 
@@ -133,7 +135,9 @@ def fetch_multivariate_gaussian(dim =10,): # TODO @hhjs : Check with Toeplitz fo
     mean = np.random.normal(0, 1.0, (dim,))
     data = np.random.multivariate_normal(mean=mean, cov=cov, size=10000)
     target = np.zeros(data.shape[0])
-    return {'data': data, 'target': target}
+    data = {'data': data, 'target': target}
+    parameters = {'mean': mean, 'cov': cov}
+    return data, parameters
 
 
 
