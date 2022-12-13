@@ -8,6 +8,7 @@ import torch
 import numpy as np
 
 from scipy import optimize
+from .mask_generators import ImageMaskGenerator
 
 
 #### MASK LOADER :
@@ -73,6 +74,8 @@ def mask_loader_image(X, Y, args, seed = None):
         mask = MAR_MNIST_mask(X,)
     elif args['missing_mechanism'] == 'none':
         mask = torch.zeros_like(X)[:,:1]
+    elif args['missing_mechanism'] == 'mask_generators_vaeac':
+        mask = mask_generators_vaeac(X, Y, args)
     else :
         raise ValueError("Missing mechanism not recognized {}".format(args['missing_mechanism']))
 
@@ -160,6 +163,32 @@ def MCAR_mask(X, p, p_obs):
 
     return mask
 
+def mask_generators_vaeac(X, Y, args):
+    """
+    Missing completely at random mechanism with a logistic masking model. First, a subset of variables with *no* missing values is
+    randomly selected. The remaining variables have missing values according completely randomly.
+    Parameters
+    ----------
+    X : torch.DoubleTensor or np.ndarray, shape (n, d)
+        Data for which missing values will be simulated. If a numpy array is provided,
+        it will be converted to a pytorch tensor.
+    p : float
+        Proportion of missing values to generate for variables which will have missing values.
+    p_obs : float
+        Proportion of variables with *no* missing values that will be used for the logistic masking model.
+    Returns
+    -------
+    mask : torch.BoolTensor or np.ndarray (depending on type of X)
+        
+    """
+    mask_generator = ImageMaskGenerator()
+    to_torch = torch.is_tensor(X) ## output a pytorch tensor, or a numpy array
+    if not to_torch:
+        X = torch.from_numpy(X)
+
+    mask = mask_generator(X, )
+    
+    return mask
 
 
 def RectangleMCAR_Mask(X, p, p_obs, orientation = 'rows'):
