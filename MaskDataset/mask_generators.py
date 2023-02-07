@@ -55,10 +55,10 @@ class FixedRectangleGenerator:
     a rectangle with corners in (x1, y1) and (x2, y2).
     """
     def __init__(self, x1, y1, x2, y2):
-        self.x1 = x1
-        self.x2 = x2
-        self.y1 = y1
-        self.y2 = y2
+        self.x1 = int(x1)
+        self.x2 = int(x2)
+        self.y1 = int(y1)
+        self.y2 = int(y2)
 
     def __call__(self, batch):
         mask = torch.zeros_like(batch)
@@ -225,13 +225,13 @@ class GFCGenerator:
     ArXiv link: https://arxiv.org/abs/1704.05838
     Note, that this generator works as supposed only for 128x128 images.
     """
-    def __init__(self):
-        gfc_o1 = FixedRectangleGenerator(52, 33, 116, 71)
-        gfc_o2 = FixedRectangleGenerator(52, 57, 116, 95)
-        gfc_o3 = FixedRectangleGenerator(52, 29, 74, 99)
-        gfc_o4 = FixedRectangleGenerator(52, 29, 74, 67)
-        gfc_o5 = FixedRectangleGenerator(52, 61, 74, 99)
-        gfc_o6 = FixedRectangleGenerator(86, 40, 124, 88)
+    def __init__(self, shape_x, shape_y):
+        gfc_o1 = FixedRectangleGenerator(52/128.*shape_x, 33/128.*shape_y, 116/128.*shape_x, 71/128.*shape_y)
+        gfc_o2 = FixedRectangleGenerator(52/128.*shape_x, 57/128.*shape_y, 116/128.*shape_x, 95/128.*shape_y)
+        gfc_o3 = FixedRectangleGenerator(52/128.*shape_x, 29/128.*shape_y, 74/128.*shape_x, 99/128.*shape_y)
+        gfc_o4 = FixedRectangleGenerator(52/128.*shape_x, 29/128.*shape_y, 74/128.*shape_x, 67/128.*shape_y)
+        gfc_o5 = FixedRectangleGenerator(52/128.*shape_x, 61/128.*shape_y, 74/128.*shape_x, 99/128.*shape_y)
+        gfc_o6 = FixedRectangleGenerator(86/128.*shape_x, 40/128.*shape_y, 124/128.*shape_x, 88/128.*shape_y)
 
         self.generator = MixtureMaskGenerator([
             gfc_o1, gfc_o2, gfc_o3, gfc_o4, gfc_o5, gfc_o6
@@ -253,7 +253,7 @@ class SIIDGMGenerator:
     In the paper authors used 64x64 images, but here for the demonstration
     purposes we adapted their masks to 128x128 images.
     """
-    def __init__(self):
+    def __init__(self, shape_x = 128, shape_y = 128):
         # the resolution parameter differs from the original paper because of
         # the image size change from 64x64 to 128x128 in order to preserve
         # the typical mask shapes
@@ -263,11 +263,11 @@ class SIIDGMGenerator:
         # for the inpainting method with respect to the original paper
         # with 64x64 images
         mcar = ImageMCARGenerator(0.95)
-        center = FixedRectangleGenerator(32, 32, 96, 96)
-        half_01 = FixedRectangleGenerator(0, 0, 128, 64)
-        half_02 = FixedRectangleGenerator(0, 0, 64, 128)
-        half_03 = FixedRectangleGenerator(0, 64, 128, 128)
-        half_04 = FixedRectangleGenerator(64, 0, 128, 128)
+        center = FixedRectangleGenerator(0.25 * shape_x, 0.25 * shape_y, 0.75 * shape_x, 0.75 * shape_y)    
+        half_01 = FixedRectangleGenerator(0, 0, shape_x, 0.5 * shape_y)
+        half_02 = FixedRectangleGenerator(0, 0, 0.5 * shape_x, shape_y)
+        half_03 = FixedRectangleGenerator(0, 0.5*shape_y, shape_x, shape_y)
+        half_04 = FixedRectangleGenerator(0.5*shape_x, 0, shape_x, shape_y)
 
         self.generator = MixtureMaskGenerator([
             center, random_pattern, mcar, half_01, half_02, half_03, half_04
@@ -286,10 +286,19 @@ class ImageMaskGenerator:
     Note, that this generator works as supposed only for 128x128 images.
     """
     def __init__(self):
-        siidgm = SIIDGMGenerator()
-        gfc = GFCGenerator()
-        common = RectangleGenerator()
-        self.generator = MixtureMaskGenerator([siidgm, gfc, common], [1, 1, 2])
+        self.shape_x = None
+        self.shape_y = None
+        # gfc = GFCGenerator()
+        # self.generator = MixtureMaskGenerator([siidgm, gfc, common], [1, 1, 2])
 
     def __call__(self, batch):
+        if self.shape_x is None:
+            shape_x, shape_y = batch.shape[2:]
+            self.shape_x = shape_x
+            self.shape_y = shape_y
+            siidgm = SIIDGMGenerator(shape_x, shape_y)
+            gfc = GFCGenerator(shape_x, shape_y)
+            common = RectangleGenerator()
+            self.generator = MixtureMaskGenerator([siidgm, gfc, common], [1, 1, 2])
+
         return self.generator(batch)

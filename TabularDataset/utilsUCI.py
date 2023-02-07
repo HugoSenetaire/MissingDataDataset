@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # This file is starting from Boris Muzellec Repo : https://github.com/BorisMuzellec/MissingDataOT.git
-from sklearn.datasets import load_iris, load_wine, load_boston, fetch_california_housing, make_moons
+from sklearn.datasets import load_iris, load_wine, fetch_california_housing, make_moons
 import os
 import pandas as pd
 import wget
