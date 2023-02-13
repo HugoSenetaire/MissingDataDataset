@@ -26,3 +26,4 @@ class DatasetMaskAugmented(Dataset):
 
     def __len__(self):
         return len(self.input_dataset)
+

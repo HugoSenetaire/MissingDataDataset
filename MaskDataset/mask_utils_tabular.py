@@ -64,12 +64,13 @@ def mask_loader_tabular(X, Y, args, seed = None):
     """
     mask_Y = None
     aux_X = X.flatten(1)
+    patterns = None
     if seed is not None :
         np.random.seed(seed = seed)
     if args['missing_mechanism'] == 'mcar':
         mask = MCAR_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'dual_mask':
-        mask = DUAL_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
+        mask, patterns = DUAL_mask(aux_X, p = args['p_missing'], p_obs = args['p_obs'], to_del = args["to_del"])
     elif args['missing_mechanism'] == 'dual_mask_opposite':
         mask = DUAL_mask_opposite(aux_X, p = args['p_missing'], p_obs = args['p_obs'])
     elif args['missing_mechanism'] == 'monotonic':
@@ -88,7 +89,7 @@ def mask_loader_tabular(X, Y, args, seed = None):
         raise ValueError('Unknown missing mechanism for tabular data: {}'.format(args['missing_mechanism']))
 
     mask = mask.reshape(X.shape)
-    return mask, mask_Y
+    return mask, mask_Y, patterns
 
 
 ########
@@ -194,7 +195,7 @@ def MCAR_mask(X, p, p_obs):
     mask = mask.unsqueeze(1)
     return mask
 
-def DUAL_mask(X, p, p_obs):
+def DUAL_mask(X, p, p_obs, to_del = "last"):
     """
     Missing mechanism with two types of mask. One where everything is observed and second one
     where we miss p_obs percent of the variables. p corresponds to the number of items with no missing values.
@@ -207,6 +208,9 @@ def DUAL_mask(X, p, p_obs):
         Proportion of data points with no missing values.
     p_obs : float
         Proportion of observed values for data points which will have missing values.
+    to_del : str, default = "last"
+        If "last", the last variables will be deleted. If "first", the first variables will be deleted. 
+        If "random", a random subset of variables will be deleted.
     Returns
     -------
     mask : torch.BoolTensor or np.ndarray (depending on type of X)
@@ -225,13 +229,25 @@ def DUAL_mask(X, p, p_obs):
     d_na = d - d_obs ## number of missing variables for data points with missing values
 
     ### Sample variables that will all be observed, and those with missing values:
-    idxs_obs = np.random.choice(d, d_obs, replace=False)
-    idxs_nas = np.array([i for i in range(d) if i not in idxs_obs])
+    if to_del == "random":
+        idxs_obs = np.random.choice(d, d_obs, replace=False)
+        idxs_nas = np.array([i for i in range(d) if i not in idxs_obs])
+    elif to_del == "first":
+        idxs_obs = np.arange(d - d_obs, d)
+        idxs_nas = np.arange(d - d_obs)
+    elif to_del == "last":
+        idxs_obs = np.arange(d_obs)
+        idxs_nas = np.arange(d_obs, d)
+
+    patterns = [np.ones(d), np.ones(d)]
+    patterns[1][idxs_nas] = 0
+    patterns[0][idxs_obs] = 0
+
 
     ber = torch.rand(n).reshape(n, 1).expand(n, d_na)
     mask[:, idxs_nas] = ber < p 
 
-    return mask
+    return mask, patterns
 
 
 def DUAL_mask_opposite(X, p, p_obs):

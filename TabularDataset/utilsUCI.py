@@ -48,8 +48,6 @@ def tensor_dataset_loader(dataset, args):
             data = load_iris()
         elif dataset == 'wine':
             data = load_wine()
-        elif dataset == 'boston':
-            data = load_boston()
         elif dataset == 'california':
             data = fetch_california_housing()
         elif dataset == 'parkinsons':
@@ -95,17 +93,18 @@ def tensor_dataset_loader(dataset, args):
         elif dataset == 'moon':
             data = fetch_moon()
         elif dataset == 'multivariate_gaussian':
-            data, parameters = fetch_multivariate_gaussian(dim = args['dim'])
+            data, parameters = fetch_multivariate_gaussian(dim = args['dim'], rho=args['rho'])
         elif dataset == 'linear_manually':
             data, parameters = fetch_linear_manually(dim = args['dim'], noise = args['noise_dataset'], problem_type = args['problem_type'], min_weight=args['min_weight'], max_weight=args['max_weight'])
 
         X = data['data']
+        print("MEAN HERE", np.mean(X, axis=0))
         Y = data['target']
         return X, Y, parameters
 
 def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', min_weight = 1e-2, max_weight = 1e2, size = 10000):
     # weights = np.arange(min_weight, max_weight, (max_weight - min_weight)/dim) * (np.random.randint(2, size=dim)*2 - 1)
-    weights = np.logspace(np.log10(min_weight), np.log10(max_weight), dim) * (np.random.randint(2, size=dim)*2 - 1)
+    weights = np.logspace(np.log10(min_weight), np.log10(max_weight), dim) * (np.random.randint(2, size=dim)*2 - 1) # Absolute value times sign
     X = np.random.rand(10000, dim)
     if problem_type == 'regression':
         Y = X @ weights + np.random.normal(0, noise, size = 10000)
@@ -118,13 +117,12 @@ def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', mi
 
 
 
-def fetch_multivariate_gaussian(dim =10,): # TODO @hhjs : Check with Toeplitz for instance to get easier covariance, par block ...
+def fetch_multivariate_gaussian(dim =10, rho = 0.5): # TODO @hhjs : Check with Toeplitz for instance to get easier covariance, par block ...
     # diag = np.exp(np.random.normal(0, 1.0, (dim, )))
     # lower_triangle = np.random.normal(loc = 0, scale = 1.0, size = (int(dim*(dim-1)//2), ))
     # aux = np.diag(diag)
     # aux[np.tril_indices(dim, -1)] = lower_triangle
     # cov =np.matmul(aux, aux.T)
-    rho = 0.5
     cov = np.zeros((dim, dim))
     for k in range(0, dim):
         for i in range(0, dim):
@@ -133,6 +131,8 @@ def fetch_multivariate_gaussian(dim =10,): # TODO @hhjs : Check with Toeplitz fo
     print("VP", np.linalg.eigvals(cov))
     mean = np.random.normal(0, 1.0, (dim,))
     data = np.random.multivariate_normal(mean=mean, cov=cov, size=10000)
+    print("MEAN", mean)
+    print("MEAN EVALUATE", data.mean(axis=0))
     target = np.zeros(data.shape[0])
     data = {'data': data, 'target': target}
     parameters = {'mean': mean, 'cov': cov}

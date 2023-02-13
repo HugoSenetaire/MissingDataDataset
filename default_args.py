@@ -22,6 +22,8 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
                         help='Change the model according to the type of problem')        ## Masking
     parser.add_argument('--missing_mechanism', type=str, default="mcar",
                         help='Choose between different type of missing mechanism')
+    parser.add_argument('--to_del', type=str, default='random', choices=['random', 'last', 'first'],
+                        help = 'Which part of the data is masked, the last or the first part or a random part')
     parser.add_argument('--p_obs', type=float, default=0.0,
                         help= 'Proportion of features with no missing values, Used in MCAR and MAR')
     parser.add_argument('--p_missing', type=float, default=0.85,
@@ -39,7 +41,8 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
     parser.add_argument('--orientation', type = str, default = 'rows', choices=['columns', 'rows'], help='Orientation of the missing values, ie full rows or full columns')
     parser.add_argument('--min_weight', type = float, default = 0.1, help='Minimum weight for the linear generated dataset')
     parser.add_argument('--max_weight', type = float, default = 1.0, help='Maximum weight for the linear generated dataset')
-
+    parser.add_argument('--rho', type = float, default = 0.5, help='Toeplitz parameter for the multivariate gaussian')
+    
 
     parser.add_argument('--yamldataset', type=str, default=None, help='YAML File path to override the dataset parameters')
     parser.add_argument('--seed', type=int, default=12, help='Seed for the random number generator')
