@@ -81,7 +81,7 @@ def mask_loader_image(X, Y, args, seed = None):
 
     if mask is not None :
         mask = mask.expand(X.shape)
-    return mask, mask_Y
+    return mask, mask_Y, None
 
 
 ########
