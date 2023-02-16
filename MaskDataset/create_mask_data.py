@@ -53,7 +53,9 @@ def create_dataset_without_mask(complete_dataset,):
     """
     dataset_train = complete_dataset.dataset_train
     masks = dataset_train.mask.flatten(1)
-    assert torch.any(masks.sum(-1) == masks.shape[1]) # Making sure that there is at least one data point without any mask
+    if not torch.any(masks.flatten(1).sum(-1) == masks.flatten(1).shape[1]) :
+        raise ValueError("No mask in the dataset")
+        # Making sure that there is at least one data point without any mask
 
     data = []
     target = []
