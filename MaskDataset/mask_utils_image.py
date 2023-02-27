@@ -76,6 +76,8 @@ def mask_loader_image(X, Y, args, seed = None):
         mask = torch.zeros_like(X)[:,:1]
     elif args['missing_mechanism'] == 'mask_generators_vaeac':
         mask = mask_generators_vaeac(X, Y, args)
+    elif args['missing_mechanism'] == 'target_correlated':
+        mask = mask_target_correlated(X, Y, args)
     else :
         raise ValueError("Missing mechanism not recognized {}".format(args['missing_mechanism']))
 
@@ -159,6 +161,22 @@ def MCAR_mask(X, p, p_obs):
     ber = torch.rand(n, d_na)
     mask[:, idxs_nas] = ber < p
 
+    mask = mask.reshape(n, 1, *dim)
+
+    return mask
+
+def mask_target_correlated(X, Y, args):
+    """
+    Missing at random mask where the missingness rate is defined by the target.
+    """
+    nb_targets = len(np.unique(Y))
+    rates = np.linspace(0.1, 0.9, nb_targets)
+
+    n, c, dim = X.shape[0], X.shape[1], X.shape[2:]
+    ber = torch.rand(n, 1, *dim)
+    p = torch.tensor([rates[int(y)] for y in Y], device = X.device).reshape(-1, 1, 1, 1).expand(n, 1, *dim)
+
+    mask = ber<p
     mask = mask.reshape(n, 1, *dim)
 
     return mask
