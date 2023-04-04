@@ -1,0 +1,15 @@
+
+# DATASET AND MASKING :
+    ## Dataset
+download : True
+dataset_name : 'checkerboard'
+cste_imputation : 0.
+problem_type : 'regression'
+    ## Masking
+missing_mechanism : "none"
+p_obs : None
+p_missing: None
+p_params : None
+exclude_input : None
+quantile : None
+cut : None

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # This file is starting from Boris Muzellec Repo : https://github.com/BorisMuzellec/MissingDataOT.git
-from sklearn.datasets import load_iris, load_wine, fetch_california_housing, make_moons
+from sklearn.datasets import load_iris, load_wine, fetch_california_housing, make_moons, make_swiss_roll, make_s_curve
+from .toy_plane_dataset import SignDataset, SineWaveDataset, CheckerboardDataset, CrescentCubedDataset, CrescentDataset, FourCirclesDataset
 import os
 import pandas as pd
 import wget
@@ -17,7 +18,8 @@ DATASETS_TENSOR = ['iris', 'wine', 'boston', 'california', 'parkinsons', \
             'blood_transfusion', 'breast_cancer_diagnostic', \
             'connectionist_bench_vowel', 'concrete_slump', \
             'wine_quality_red', 'wine_quality_white', 'moon', 'multivariate_gaussian', \
-             'linear_manually']
+            'linear_manually', 'swiss_roll', 's_curve', 'sign', 'sine_wave', 'checkerboard', \
+            'crescent_cubed', 'crescent', 'four_circles']
 
 
 
@@ -92,6 +94,22 @@ def tensor_dataset_loader(dataset, args):
             data = fetch_wine_quality_white()
         elif dataset == 'moon':
             data = fetch_moon()
+        elif dataset == 's_curve':
+            data = fetch_s_curve()
+        elif dataset == 'swiss_roll':
+            data = fetch_swiss_roll()
+        elif dataset == 'sin_wave':
+            data = fetch_sine_wave()
+        # elif dataset == 'sign':
+        #     data = fetch_sign()
+        elif dataset == 'checkerboard':
+            data = fetch_checkerboard()
+        elif dataset == 'crescent_cubed':
+            data = fetch_crescent_cubed_dataset()
+        elif dataset == 'crescent':
+            data = fetch_crescent_dataset()
+        elif dataset == 'four_circles':
+            data = fetch_fourcircles()
         elif dataset == 'multivariate_gaussian':
             data, parameters = fetch_multivariate_gaussian(dim = args['dim'], rho=args['rho'])
         elif dataset == 'linear_manually':
@@ -145,10 +163,70 @@ def fetch_moon():
     """
     Create a moon dataset similar to the one in "HOW TO DEAL WITH MISSING DATA IN SUPERVISED DEEP LEARNING?"
     """
-    data, target = make_moons(n_samples=4000, noise=0.1, random_state=0)
+    data, target = make_moons(n_samples=10000, noise=0.1, random_state=0)
     return {'data': data, 'target': target}
     
+def fetch_swiss_roll():
+    """
+    Create a swiss roll dataset
+    """
+    data, target = make_swiss_roll(n_samples=10000, noise=0.1, random_state=0)
+    data = data[:, [0, 2]]
+    return {'data': data, 'target': target}
 
+
+def fetch_s_curve():
+    """
+    Create a s curve dataset
+    """
+    data, target = make_s_curve(n_samples=10000, noise=0.1, random_state=0)
+    data = data[:, [0, 2]]
+    return {'data': data, 'target': target}
+
+def fetch_sine_wave():
+    """
+    Create a sine wave dataset
+    """
+    dataset = SineWaveDataset(num_points=10000,).reset()
+    data = dataset.data
+    target = None
+    return {'data': data, 'target': target}
+
+def fetch_crescent_dataset():
+    """
+    Create a crescent dataset
+    """
+    dataset = CrescentDataset(num_points=10000,).reset()
+    data = dataset.data
+    target = None
+    return {'data': data, 'target': target}
+
+def fetch_crescent_cubed_dataset():
+    """
+    Create a crescent cube dataset
+    """
+    dataset = CrescentCubedDataset(num_points=10000,).reset()
+    data = dataset.data
+    target = None
+    return {'data': data, 'target': target}
+
+def fetch_checkerboard():
+    """
+    Create a checkerboard dataset
+    """
+    dataset = CheckerboardDataset(num_points=10000,).reset()
+    data = dataset.data
+    target = None
+    return {'data': data, 'target': target}
+
+def fetch_fourcircles():
+    """
+    Create a four circles dataset
+    """
+    dataset = FourCirclesDataset(num_points=10000,).reset()
+    data = dataset.data
+    target = None
+    return {'data': data, 'target': target}
 
 
 def fetch_parkinsons():
