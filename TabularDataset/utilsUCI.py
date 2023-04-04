@@ -170,7 +170,7 @@ def fetch_swiss_roll():
     """
     Create a swiss roll dataset
     """
-    data, target = make_swiss_roll(n_samples=10000, noise=0.1, random_state=0)
+    data, target = make_swiss_roll(n_samples=10000, noise=0.5, random_state=0)
     data = data[:, [0, 2]]
     return {'data': data, 'target': target}
 
@@ -179,7 +179,7 @@ def fetch_s_curve():
     """
     Create a s curve dataset
     """
-    data, target = make_s_curve(n_samples=10000, noise=0.1, random_state=0)
+    data, target = make_s_curve(n_samples=10000, noise=0.3, random_state=0)
     data = data[:, [0, 2]]
     return {'data': data, 'target': target}
 
@@ -187,45 +187,50 @@ def fetch_sine_wave():
     """
     Create a sine wave dataset
     """
-    dataset = SineWaveDataset(num_points=10000,).reset()
-    data = dataset.data
-    target = None
+    dataset = SineWaveDataset(num_points=10000,)
+    dataset.reset()
+    data = dataset.data.numpy()
+    target = np.zeros(len(data))
     return {'data': data, 'target': target}
 
 def fetch_crescent_dataset():
     """
     Create a crescent dataset
     """
-    dataset = CrescentDataset(num_points=10000,).reset()
-    data = dataset.data
-    target = None
+    dataset = CrescentDataset(num_points=10000,)
+    dataset.reset()
+    data = dataset.data.numpy()
+    target = np.zeros(len(data))
     return {'data': data, 'target': target}
 
 def fetch_crescent_cubed_dataset():
     """
     Create a crescent cube dataset
     """
-    dataset = CrescentCubedDataset(num_points=10000,).reset()
-    data = dataset.data
-    target = None
+    dataset = CrescentCubedDataset(num_points=10000,)
+    dataset.reset()
+    data = dataset.data.numpy()
+    target = np.zeros(len(data))
     return {'data': data, 'target': target}
 
 def fetch_checkerboard():
     """
     Create a checkerboard dataset
     """
-    dataset = CheckerboardDataset(num_points=10000,).reset()
-    data = dataset.data
-    target = None
+    dataset = CheckerboardDataset(num_points=10000,)
+    dataset.reset()
+    data = dataset.data.numpy()
+    target = np.zeros(len(data))
     return {'data': data, 'target': target}
 
 def fetch_fourcircles():
     """
     Create a four circles dataset
     """
-    dataset = FourCirclesDataset(num_points=10000,).reset()
-    data = dataset.data
-    target = None
+    dataset = FourCirclesDataset(num_points=10000,)
+    dataset.reset()
+    data = dataset.data.numpy()
+    target = np.zeros(len(data))
     return {'data': data, 'target': target}
 
 
