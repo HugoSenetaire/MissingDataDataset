@@ -12,6 +12,19 @@ default_MNIST_transform = torchvision.transforms.Compose([
                                     ])
 
 
+def logit(x, alpha=1e-6):
+    x = x * (1 - 2 * alpha) + alpha
+    return torch.log(x) - torch.log(1 - x)
+
+
+transform_logit = torchvision.transforms.Compose([
+                                    torchvision.transforms.ToTensor(),  
+                                    lambda x: x * (255. / 256.) + (torch.rand_like(x) / 256.),
+                                    logit,])
+
+
+
+
 class MnistDataset():
     def __init__(self,
             root_dir: str,
@@ -42,6 +55,23 @@ class MnistDataset():
 
     def get_dim_output(self,):
         return 10
+    
+
+class MnistDatasetLogitTransformed(MnistDataset):
+    def __init__(self,
+            root_dir: str,
+            transform = transform_logit,
+            target_transform = None,
+            download: bool = False,
+            seed = None,
+            **kwargs,):
+
+        super().__init__(root_dir, transform, target_transform, download, seed, **kwargs)
+
+    def transform_back(self, x):
+        return torch.sigmoid(x)
+
+
 
 
 class BinaryMnistDataset():
