@@ -30,6 +30,9 @@ def create_mask_dataset(args_dict, complete_dataset, DATASETS_TENSOR, dic_image_
         except KeyError:
             X = torch.stack([dataset.__getitem__(i)[0] for i in range(len(dataset))])
             Y = torch.stack([dataset.__getitem__(i)[1] for i in range(len(dataset))])
+        except AttributeError:
+            X = torch.stack([dataset.__getitem__(i)[0] for i in range(len(dataset))])
+            Y = torch.stack([dataset.__getitem__(i)[1] for i in range(len(dataset))])
         mask_X, mask_Y, patterns = create_mask(X, Y, args=args_dict, seed=args_dict["seed"])
         mask_X = 1-mask_X.to(torch.float32)
         list_datasets.append(DatasetMaskAugmented(dataset, mask_X,))

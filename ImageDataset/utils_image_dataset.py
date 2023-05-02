@@ -3,7 +3,9 @@ from .MNISTDataset import MnistDataset, BinaryMnistDataset, MnistDatasetLogitTra
 from .FashionMNIST import FashionMNIST, BinaryFashionMnistDataset, FashionMNISTLogitTransformed
 from .CIFAR100 import CIFAR100
 from .CIFAR10 import CIFAR10
-
+from .UTKFaceDataset import UTKFace
+from .d1regression_1 import d1Regression_1
+from .d1regression_2 import d1Regression_2
 
 dic_image_dataset = {
     "MNIST" : MnistDataset,
@@ -14,6 +16,9 @@ dic_image_dataset = {
     "CIFAR10" : CIFAR10,
     "BinaryMNIST" : BinaryMnistDataset,
     "BinaryFashionMNIST" : BinaryFashionMnistDataset,
+    "UTKFace" : UTKFace,
+    "1d_regression_1" : d1Regression_1,
+    "1d_regression_2" : d1Regression_2,
 }
 
 def get_image_dataset(args_dict):
