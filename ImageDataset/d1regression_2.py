@@ -128,7 +128,7 @@ class d1Regression_2():
         for path in [x_train_path,y_train_path,x_val_path,y_val_path,x_test_path,y_test_path]:
             if not os.path.exists(path):
                 print("Generating data for 1dregression_2 because {} doesn't exist".format(path))
-                self.generate_data(root_dir)
+                predump(root_dir)
         with open(x_train_path, "rb") as file:
             self.x_train = pickle.load(file)
         with open(y_train_path, "rb") as file:

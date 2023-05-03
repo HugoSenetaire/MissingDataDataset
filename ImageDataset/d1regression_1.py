@@ -17,7 +17,7 @@ import scipy.stats
 import pickle
 
 def predump(root_dir):
-    x = np.random.uniform(low=-3.0, high=3.0, size=(10000, ))
+    x = np.random.uniform(low=-3.0, high=3.0, size=(4000, ))
     x = x.astype(np.float32)
     
     y = []
@@ -84,8 +84,8 @@ class d1Regression_1():
         with open(path_y, "rb") as file:
             self.y = pickle.load(file)
        
-        self.train_x, self.test_x, self.val_x = self.x[:8000].reshape(-1,1), self.x[8000:9000].reshape(-1,1), self.x[9000:].reshape(-1,1)
-        self.train_y, self.test_y, self.val_y = self.y[:8000].reshape(-1,1), self.y[8000:9000].reshape(-1,1), self.y[9000:].reshape(-1,1)
+        self.train_x, self.test_x, self.val_x = self.x[:2000].reshape(-1,1), self.x[2000:3000].reshape(-1,1), self.x[3000:].reshape(-1,1)
+        self.train_y, self.test_y, self.val_y = self.y[:2000].reshape(-1,1), self.y[2000:3000].reshape(-1,1), self.y[3000:].reshape(-1,1)
         
         self.dataset_train = TensorDataset(torch.from_numpy(self.train_x), torch.from_numpy(self.train_y))
         self.dataset_test = TensorDataset(torch.from_numpy(self.test_x), torch.from_numpy(self.test_y))
