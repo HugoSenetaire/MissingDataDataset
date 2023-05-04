@@ -6,7 +6,9 @@ from .CIFAR10 import CIFAR10
 from .UTKFaceDataset import UTKFace
 from .d1regression_1 import d1Regression_1
 from .d1regression_2 import d1Regression_2
-
+from .cell_count import CellCount
+from .steering_angle import SteeringAngle
+from.head_pose_biwi import HeadPoseBIWI
 dic_image_dataset = {
     "MNIST" : MnistDataset,
     "MNISTlogit" : MnistDatasetLogitTransformed,
@@ -19,6 +21,9 @@ dic_image_dataset = {
     "UTKFace" : UTKFace,
     "1d_regression_1" : d1Regression_1,
     "1d_regression_2" : d1Regression_2,
+    'CellCount' : CellCount,
+    'SteeringAngle' : SteeringAngle,
+    'HeadPoseBIWI' : HeadPoseBIWI,
 }
 
 def get_image_dataset(args_dict):
