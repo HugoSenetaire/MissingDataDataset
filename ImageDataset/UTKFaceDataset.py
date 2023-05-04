@@ -126,3 +126,11 @@ class UTKFace():
 
     def get_dim_output(self,):
         return (1,)
+    
+    def transform_back(self, x):
+        batch_size = x.shape[0]
+        x = x.view(batch_size, 3, 64, 64)
+        transform_mean = torch.tensor((0.485, 0.456, 0.406)).view(3,1,1).unsqueeze(0).expand(batch_size,3,64,64)
+        transform_std = torch.tensor((0.229, 0.224, 0.225)).view(3,1,1).unsqueeze(0).expand(batch_size,3,64,64)
+        x_transform = x * transform_std + transform_mean
+        return x_transform
