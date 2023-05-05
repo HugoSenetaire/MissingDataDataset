@@ -1,0 +1,4 @@
+dataset_name: 'PoissonDataset'
+dataset_params:
+  num_samples: 1000
+  lambda_: 1.
