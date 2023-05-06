@@ -25,7 +25,7 @@ class CategoricalDataset(Dataset):
         """
         self.distribution = torch.Tensor(distribution)
         assert torch.allclose(
-            torch.sum(distribution), torch.tensor(1.0)
+            torch.sum(self.distribution), torch.tensor(1.0)
         ), f"distribution must sum to one and got {distribution}"
         self.num_samples = num_samples
         self.num_classes = len(distribution)
