@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 from jaxtyping import Float
 from torch.distributions import categorical
 from torch.utils.data import Dataset
@@ -28,16 +29,20 @@ class CategoricalDataset(Dataset):
             torch.sum(self.distribution), torch.tensor(1.0)
         ), f"distribution must sum to one and got {distribution}"
         self.num_samples = num_samples
-        self.num_classes = len(distribution)
-        self.data = categorical.Categorical(self.distribution).sample(
-            (num_samples, 1, 1)
+        self.num_categories = len(distribution)
+        data = torch.Tensor(
+            categorical.Categorical(self.distribution).sample((num_samples,))
+        ).type("torch.LongTensor")
+        self.data = F.one_hot(data, num_classes=self.num_categories).type(
+            "torch.FloatTensor"
         )
 
     def __len__(self):
         return self.num_samples
 
-    def __getitem__(self, index: int) -> Float[torch.Tensor, "1 1"]:
-        return self.data[index]
+    def __getitem__(self, index: int) -> Float[torch.Tensor, "num_categories"]:
+        return (self.data[index], torch.zeros(self.num_categories))
+        # return {"data": self.data[index]}, None
 
 
 class Categorical:
@@ -67,6 +72,7 @@ class Categorical:
         if num_samples_test is None:
             num_samples_test = int(num_samples * 0.1)
 
+        self.num_categories = len(distribution)
         self.dataset_train = CategoricalDataset(distribution, num_samples)
         self.dataset_val = CategoricalDataset(distribution, num_samples_val)
         self.dataset_test = CategoricalDataset(distribution, num_samples_test)
@@ -74,4 +80,16 @@ class Categorical:
     def get_dim_input(
         self,
     ):
-        return (1, 1)
+        return (
+            1,
+            self.num_categories,
+        )
+
+    def get_dim_output(
+        self,
+    ):
+        return (self.num_categories,)
+
+    def transform_back(self, x):
+        """Method to make it work with Abstract Trainer"""
+        return None

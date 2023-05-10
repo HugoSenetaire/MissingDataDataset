@@ -25,13 +25,15 @@ class PoissonDataset(Dataset):
         self.lambda_ = lambda_
         assert lambda_ > 0, f"lambda_ must be positive and got {lambda_}"
         self.num_samples = num_samples
-        self.data = torch.poisson(torch.ones(num_samples, 1, 1) * lambda_)
+        self.data = torch.poisson(torch.ones(num_samples) * lambda_).type(
+            "torch.FloatTensor"
+        )
 
     def __len__(self):
         return self.num_samples
 
-    def __getitem__(self, index: int) -> Float[torch.Tensor, "1 1"]:
-        return self.data[index]
+    def __getitem__(self, index: int) -> Float[torch.Tensor, "1"]:
+        return self.data[index], torch.zeros(1)
 
 
 class Poisson:
@@ -68,3 +70,12 @@ class Poisson:
         self,
     ):
         return (1, 1)
+
+    def get_dim_output(
+        self,
+    ):
+        return (1,)
+
+    def transform_back(self, x):
+        """Method to make it work with Abstract Trainer"""
+        return None

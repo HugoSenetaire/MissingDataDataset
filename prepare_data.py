@@ -54,8 +54,11 @@ def augment_dataset_with_mask(
             dic_image_dataset=dic_image_dataset,
         )
     else:
-        complete_masked_dataset = get_discrete_dataset(
+        complete_masked_dataset = create_mask_dataset(
             args_dict,
+            complete_dataset,
+            DATASETS_TENSOR=DATASETS_TENSOR,
+            dic_image_dataset=dic_image_dataset,
         )
     return complete_masked_dataset
 
