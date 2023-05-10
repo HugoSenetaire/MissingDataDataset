@@ -12,6 +12,7 @@ class DatasetMaskAugmented(Dataset):
 
         self.mask = mask
         assert self.mask.shape[0] == len(self.input_dataset)
+        self.len = len(self.input_dataset)
 
     def __getitem__(self, idx):
 
@@ -25,5 +26,5 @@ class DatasetMaskAugmented(Dataset):
 
 
     def __len__(self):
-        return len(self.input_dataset)
+        return self.len
 
