@@ -4,7 +4,7 @@ from .ImageDataset import dic_image_dataset, get_image_dataset
 from .MaskDataset import create_mask_dataset
 from .open_yaml import update_config_from_paths
 from .TabularDataset import DATASETS_TENSOR, get_dataset_from_tensor
-
+from .DatasetFromMAF import dic_maf_dataset, get_maf_dataset
 
 def get_vanilla_dataset(
     args_dict,
@@ -35,6 +35,11 @@ def get_vanilla_dataset(
     elif args_dict["dataset_name"] in dic_discrete_dataset:
         complete_dataset = get_discrete_dataset(
             args_dict,
+        )
+    elif args_dict["dataset_name"] in dic_maf_dataset :
+        complete_dataset = get_maf_dataset(
+            name = args_dict['dataset_name'],
+            root = args_dict["root"],
         )
     else:
         raise ValueError("Dataset {} not recognized".format(args_dict["dataset_name"]))

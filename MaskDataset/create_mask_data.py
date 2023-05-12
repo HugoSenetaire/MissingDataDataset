@@ -3,6 +3,7 @@ import torch
 
 from ..DatasetUtils import CompleteDatasets
 from ..DiscreteDataset import dic_discrete_dataset, get_discrete_dataset
+from ..DatasetFromMAF import dic_maf_dataset
 from .mask_utils_image import mask_loader_image
 from .mask_utils_tabular import mask_loader_tabular
 from .MaskAugmentedDataset import DatasetMaskAugmented
@@ -25,7 +26,7 @@ def create_mask_dataset(
         create_mask = mask_loader_tabular
     elif dataset_name in dic_image_dataset:
         create_mask = mask_loader_image
-    elif dataset_name in dic_discrete_dataset:
+    elif dataset_name in dic_discrete_dataset or dataset_name in dic_maf_dataset:
         create_mask = lambda x, y, args, seed: (
             torch.zeros_like(x),
             torch.zeros_like(y),
