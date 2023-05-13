@@ -19,7 +19,7 @@ DATASETS_TENSOR = ['iris', 'wine', 'boston', 'california', 'parkinsons', \
             'connectionist_bench_vowel', 'concrete_slump', \
             'wine_quality_red', 'wine_quality_white', 'moon', 'multivariate_gaussian', \
             'linear_manually', 'swiss_roll', 's_curve', 'sign', 'sine_wave', 'checkerboard', \
-            'crescent_cubed', 'crescent', 'four_circles']
+            'crescent_cubed', 'crescent', 'four_circles', 'funnel_2d']
 
 
 
@@ -114,6 +114,8 @@ def tensor_dataset_loader(dataset, args):
             data, parameters = fetch_multivariate_gaussian(dim = args['dim'], rho=args['rho'])
         elif dataset == 'linear_manually':
             data, parameters = fetch_linear_manually(dim = args['dim'], noise = args['noise_dataset'], problem_type = args['problem_type'], min_weight=args['min_weight'], max_weight=args['max_weight'])
+        elif dataset == 'funnel_2d':
+            data, parameters = fetch_funnel(dim = 2)
 
         X = data['data']
         print("MEAN HERE", np.mean(X, axis=0))
@@ -133,6 +135,13 @@ def fetch_linear_manually(dim = 10, noise = 0.1, problem_type = 'regression', mi
     parameters = {'weights': weights, 'bias': np.zeros_like(X[0])}
     return {'data': X, 'target': Y}, parameters 
 
+def fetch_funnel(dim = 2):
+    y = np.random.normal(0, 1, size = (10000,1 ))
+    x = np.random.normal(np.zeros_like(y), np.exp(y), size = (10000, dim - 1))
+    X = np.concatenate([x, y], axis = 1)
+    return {'data': X, 'target': np.zeros_like(X[:, 0])}, None
+    # parameters = {'weights': np.zeros(dim), 'bias': np.zeros(dim)}
+    # return {'data': X, 'target': Y}, parameters
 
 
 def fetch_multivariate_gaussian(dim =10, rho = 0.5): # TODO @hhjs : Check with Toeplitz for instance to get easier covariance, par block ...
