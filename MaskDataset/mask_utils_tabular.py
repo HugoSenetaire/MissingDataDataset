@@ -182,9 +182,9 @@ def MCAR_mask(X, p, p_obs):
 
     mask = torch.zeros(n, d).bool() if to_torch else np.zeros((n, d)).astype(bool)
 
-    d_obs = int(p_obs * d) ## number of variables that will have no missing values (at least one variable)
+    # d_obs = max(int(p_obs * d),1) ## number of variables that will have no missing values (at least one variable)
+    d_obs =int(p_obs * d) ## number of variables that will have no missing values (at least one variable)
     d_na = d - d_obs ## number of variables that will have missing values
-
     ### Sample variables that will all be observed, and those with missing values:
     idxs_obs = np.random.choice(d, d_obs, replace=False)
     idxs_nas = np.array([i for i in range(d) if i not in idxs_obs])
@@ -193,6 +193,7 @@ def MCAR_mask(X, p, p_obs):
     mask[:, idxs_nas] = ber < p
 
     mask = mask.unsqueeze(1)
+    print(mask)
     return mask
 
 def DUAL_mask(X, p, p_obs, to_del = "last"):

@@ -19,7 +19,7 @@ DATASETS_TENSOR = ['iris', 'wine', 'boston', 'california', 'parkinsons', \
             'connectionist_bench_vowel', 'concrete_slump', \
             'wine_quality_red', 'wine_quality_white', 'moon', 'multivariate_gaussian', \
             'linear_manually', 'swiss_roll', 's_curve', 'sign', 'sine_wave', 'checkerboard', \
-            'crescent_cubed', 'crescent', 'four_circles', 'funnel_2d']
+            'crescent_cubed', 'crescent', 'four_circles', 'funnel_2d', 'pinwheel_dataset',]
 
 
 
@@ -116,6 +116,8 @@ def tensor_dataset_loader(dataset, args):
             data, parameters = fetch_linear_manually(dim = args['dim'], noise = args['noise_dataset'], problem_type = args['problem_type'], min_weight=args['min_weight'], max_weight=args['max_weight'])
         elif dataset == 'funnel_2d':
             data, parameters = fetch_funnel(dim = 2)
+        elif dataset == 'pinwheel_dataset':
+            data, parameters = make_pinwheel_data(0.3, 0.05, 5, 2000, 0.25)
 
         X = data['data']
         print("MEAN HERE", np.mean(X, axis=0))
@@ -142,6 +144,29 @@ def fetch_funnel(dim = 2):
     return {'data': X, 'target': np.zeros_like(X[:, 0])}, None
     # parameters = {'weights': np.zeros(dim), 'bias': np.zeros(dim)}
     # return {'data': X, 'target': Y}, parameters
+
+def make_pinwheel_data(radial_std, tangential_std, num_classes, num_per_class, rate):
+    # code from Johnson et. al. (2016)
+    rads = np.linspace(0, 2*np.pi, num_classes, endpoint=False)
+
+    np.random.seed(1)
+
+    features = np.random.randn(num_classes*num_per_class, 2) \
+        * np.array([radial_std, tangential_std])
+    features[:,0] += 1.
+    labels = np.repeat(np.arange(num_classes), num_per_class)
+
+    angles = rads[labels] + rate * np.exp(features[:,0])
+    rotations = np.stack([np.cos(angles), -np.sin(angles), np.sin(angles), np.cos(angles)])
+    rotations = np.reshape(rotations.T, (-1, 2, 2))
+
+    feats = 10 * np.einsum('ti,tij->tj', features, rotations)
+
+    data = np.random.permutation(np.hstack([feats, labels[:, None]]))
+    current_data = {'data': data[:, 0:2], 'target' : labels}
+    return current_data, None
+
+
 
 
 def fetch_multivariate_gaussian(dim =10, rho = 0.5): # TODO @hhjs : Check with Toeplitz for instance to get easier covariance, par block ...
