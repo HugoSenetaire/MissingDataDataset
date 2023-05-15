@@ -42,7 +42,6 @@ class CategoricalDataset(Dataset):
 
     def __getitem__(self, index: int) -> Float[torch.Tensor, "num_categories"]:
         return (self.data[index], torch.zeros(self.num_categories))
-        # return {"data": self.data[index]}, None
 
 
 class Categorical:
