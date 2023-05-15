@@ -1,0 +1,7 @@
+dataset_name: "ising"
+dataset_params:
+  nb_nodes: 100
+  average_degree: 4
+  seed: 1111
+  percent_val: null
+  percent_test: null

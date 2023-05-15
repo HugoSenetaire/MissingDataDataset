@@ -1,4 +1,4 @@
 dataset_name: 'categorical'
 dataset_params:
-  num_samples: 10000
-  distribution: [0.1, 0.2, 0.3, 0.4]
+  num_samples: 30000
+  distribution: [0.1, 0.1, 0.4, 0.4]
