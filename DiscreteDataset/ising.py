@@ -1,4 +1,5 @@
 import pickle
+from pathlib import Path
 
 import torch
 import torch.nn.functional as F
@@ -27,47 +28,32 @@ class IsingDataset(Dataset):
         J: Float[torch.Tensor, "nb_nodes nb_nodes"], the adjacency matrix of the graph.
     """
 
-    def __init__(self, nb_nodes: int, average_degree: int, seed: int) -> None:
+    def __init__(
+        self,
+        samples: Float[torch.Tensor, "nb_samples nb_nodes"],
+        nb_nodes: int,
+        average_degree: int,
+        seed: int,
+    ) -> None:
         """Initialize the dataset by unpacking the samples from a pickle file located under ../../GWG_DATASETS
         Args:
+            samples: Float[torch.Tensor, "nb_samples nb_nodes"], samples from the Ising model.
             nb_nodes: int, number of nodes in the graph. 100 or 200.
             average_degree: int, average degree of the graph. 2 or 4.
-
             seed: int, seed used to generate the samples. Must be 1111, 2222, 3333, 4444 or 5555.
 
         Raises:
-            AssertionError: if nb_nodes is not 100 or 200
-            AssertionError: if average_degree is not 2 or 4
             AssertionError: if seed is not 1111, 2222, 3333, 4444 or 5555
+            AssertionError: if nb_nodes is not 100 and average_degree is not 2 or if nb_nodes is not 200 and average_degree is not 4
         """
-        assert nb_nodes in [100, 200], f"nb_nodes must be 100 or 200 and got {nb_nodes}"
-        assert average_degree in [
-            2,
-            4,
-        ], f"average_degree must be 2 or 4 and got {average_degree}"
-        assert seed in [
-            1111,
-            2222,
-            3333,
-            4444,
-            5555,
-        ], f"seed must be 1111, 2222, 3333, 4444 or 5555 and got {seed}"
+
         self.nb_nodes = nb_nodes
         self.average_degree = average_degree
-        directory = (
-            f".GWG_DATASETS/ising_er_nodes_{nb_nodes}_conn_{average_degree}_seed_{seed}"
-        )
-        data_path = f"{directory}/data.pkl"
-        J_path = f"{directory}/J.pkl"
-
-        with open(data_path, "rb") as f:
-            self.samples = pickle.load(f)
-
-        with open(J_path, "rb") as f:
-            self.J = pickle.load(f)
+        self.samples = samples
+        self.nb_samples = samples.shape[0]
 
     def __len__(self):
-        return self.samples.shape[0]
+        return self.nb_samples
 
     def __getitem__(self, index: int) -> Float[torch.Tensor, "nb_nodes"]:
         return (self.samples[index], torch.zeros(self.nb_nodes))
@@ -80,6 +66,7 @@ class Ising:
         dataset_train: IsingDataset, dataset for training
         dataset_val: IsingDataset, dataset for validation
         dataset_test: IsingDataset, dataset for testing
+        J$: Float[torch.Tensor, "nb_nodes nb_nodes"], the adjacency matrix of the graph.
     """
 
     def __init__(
@@ -97,8 +84,27 @@ class Ising:
             seed: int, seed used to generate the samples. Must be 1111, 2222, 3333, 4444 or 5555.
             percent_val: float, percentage of the training set to use for validation. If None, 10% of the training set is used.
             percent_test: float, percentage of the training set to use for testing. If None, 10% of the training set is used.
+
+        Raises:
+            AssertionError: if seed is not 1111, 2222, 3333, 4444 or 5555
+            AssertionError: if nb_nodes is not 100 and average_degree is not 2 or if nb_nodes is not 200 and average_degree is not 4
+            AssertionError: if percent_val + percent_test is greater than 1
         """
-        dataset = IsingDataset(nb_nodes, average_degree, seed)
+        assert seed in [
+            1111,
+            2222,
+            3333,
+            4444,
+            5555,
+        ], f"seed must be 1111, 2222, 3333, 4444 or 5555 and got {seed}"
+        assert (
+            nb_nodes == 100
+            and average_degree == 2
+            or nb_nodes == 200
+            and average_degree == 4
+        )
+        self.nb_nodes = nb_nodes
+        self.average_degree = average_degree
 
         if percent_val is None:
             percent_val = 0.1
@@ -109,12 +115,40 @@ class Ising:
             percent_val + percent_test < 1
         ), "percent_val + percent_test must be less than 1"
 
-        list_data = random_split(
-            [1 - percent_val - percent_test, percent_val, percent_test], dataset
+        percent_train = 1 - percent_val - percent_test
+
+        directory = Path.cwd() / (
+            f"Dataset/MissingDataDataset/DiscreteDataset/GWG_DATASETS/ising_er_nodes_{nb_nodes}_conn_{average_degree}_seed_{seed}"
         )
-        self.dataset_train = list_data[0]
-        self.dataset_val = list_data[1]
-        self.dataset_test = list_data[2]
+        data_path = f"{directory}/data.pkl"
+        J_path = f"{directory}/J.pkl"
+
+        with open(data_path, "rb") as f:
+            samples = pickle.load(f)
+
+        with open(J_path, "rb") as f:
+            self.J = pickle.load(f)
+
+        nb_samples = samples.shape[0]
+        shuffled_samples = samples[torch.randperm(nb_samples)]
+        samples_train = shuffled_samples[: int(nb_samples * percent_train)]
+        samples_val = shuffled_samples[
+            int(nb_samples * percent_train) : int(
+                nb_samples * (percent_train + percent_val)
+            )
+        ]
+        samples_test = shuffled_samples[
+            int(nb_samples * (percent_train + percent_val)) :
+        ]
+
+        assert len(samples_train) + len(samples_val) + len(samples_test) == nb_samples
+        assert len(samples_train) > 0
+        assert len(samples_val) > 0
+        assert len(samples_test) > 0
+
+        self.dataset_train = IsingDataset(samples_train, nb_nodes, average_degree, seed)
+        self.dataset_val = IsingDataset(samples_val, nb_nodes, average_degree, seed)
+        self.dataset_test = IsingDataset(samples_test, nb_nodes, average_degree, seed)
 
     def get_dim_input(self):
         return (1, self.nb_nodes)
