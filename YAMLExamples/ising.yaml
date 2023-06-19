@@ -1,5 +1,5 @@
 dataset_name: "ising"
-dataset_params:
+dataset_parameters:
   nb_nodes: 100
   average_degree: 2
   seed: 1111

@@ -1,0 +1,1 @@
+Few datasets coming from [Masked Autoregressive Flow for Density Estimation](https://arxiv.org/pdf/1705.07057.pdf) useful for evaluation on different datasets.
