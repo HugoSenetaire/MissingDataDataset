@@ -53,11 +53,11 @@ def get_free_datasets(
     )
 
     if parameters is None:
-        data_train = scale(data_train)
+        data_train = scale(data_train.flatten(1)).reshape((-1,) + dim_input)
         data_train = torch.tensor(data_train, dtype=torch.float32)
-        data_val = scale(data_val)
+        data_val = scale(data_val.flatten(1)).reshape((-1,) + dim_input)
         data_val = torch.tensor(data_val, dtype=torch.float32)
-        data_test = scale(data_test)
+        data_test = scale(data_test.flatten(1)).reshape((-1,) + dim_input)
         data_test = torch.tensor(data_test, dtype=torch.float32)
 
     dataset_train = DictTensorDataset(dim_input, data_train, target_train)

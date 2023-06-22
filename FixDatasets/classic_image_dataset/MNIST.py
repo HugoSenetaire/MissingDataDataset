@@ -71,7 +71,7 @@ class MNISTLogitTransformed(MNIST):
 
 
 
-class BinaryFashionMNIST(MNIST):
+class BinaryMNIST(MNIST):
     def __init__(self,
             root_dir: str,
             transform = transform_binary,

@@ -25,6 +25,9 @@ def default_args_missingdatadataset(parser = None,root_default = None ):
 
     parser.add_argument('--yamldataset', type=str, default=None, help='YAML File path to override the dataset parameters')
     parser.add_argument('--seed', type=int, default=12, help='Seed for the random number generator')
+    parser.add_argument('--dataloader_name', type=str, default='default', help='Name of the dataloader')
+    parser.add_argument('--batch_size', type=int, default=32, help='Batch size')
+    parser.add_argument('--num_workers', type=int, default=None, help='Number of workers')
     
     if root_default is None :
         raise ValueError("root_default should be provided")
