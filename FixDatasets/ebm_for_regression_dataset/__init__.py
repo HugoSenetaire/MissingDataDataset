@@ -7,8 +7,8 @@ from .UTKFaceDataset import UTKFace
 
 EBM_FOR_REGRESSION_DATASETS = {
     "CellCount": CellCount,
-    "d1Regression_1": d1Regression_1,
-    "d1Regression_2": d1Regression_2,
+    "1d_regression_1": d1Regression_1,
+    "1d_regression_2": d1Regression_2,
     "HeadPoseBIWI": HeadPoseBIWI,
     "SteeringAngle": SteeringAngle,
     "UTKFace": UTKFace,

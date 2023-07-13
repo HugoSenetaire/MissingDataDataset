@@ -1,10 +1,7 @@
 import torch
 import torch.utils.data
-import torch.nn.functional as F
-from torch.autograd import Variable
-from torch.utils.data import TensorDataset
 import os
-
+from ...complete_dataset import DictTensorDataset
 import numpy as np
 
 import matplotlib
@@ -86,10 +83,9 @@ class d1Regression_1():
        
         self.train_x, self.test_x, self.val_x = self.x[:2000].reshape(-1,1), self.x[2000:3000].reshape(-1,1), self.x[3000:].reshape(-1,1)
         self.train_y, self.test_y, self.val_y = self.y[:2000].reshape(-1,1), self.y[2000:3000].reshape(-1,1), self.y[3000:].reshape(-1,1)
-        
-        self.dataset_train = TensorDataset(torch.from_numpy(self.train_x), torch.from_numpy(self.train_y))
-        self.dataset_test = TensorDataset(torch.from_numpy(self.test_x), torch.from_numpy(self.test_y))
-        self.dataset_val = TensorDataset(torch.from_numpy(self.val_x), torch.from_numpy(self.val_y))
+        self.dataset_train = DictTensorDataset(self.x[0].shape,torch.from_numpy(self.train_x), torch.from_numpy(self.train_y))
+        self.dataset_test = DictTensorDataset(self.x[0].shape,torch.from_numpy(self.test_x), torch.from_numpy(self.test_y))
+        self.dataset_val = DictTensorDataset(self.x[0].shape,torch.from_numpy(self.val_x), torch.from_numpy(self.val_y))
       
     def get_dim_input(self,):
         return (1,1)

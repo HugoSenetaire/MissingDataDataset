@@ -38,9 +38,9 @@ def create_mask_dataset(
         masks_test = masks[len(complete_dataset.dataset_train)+len(complete_dataset.dataset_val):]
     else :
         static_generator = NoneMaskGenerator()
-        masks_train = torch.ones(len(complete_dataset.dataset_train), *complete_dataset.dim_input)
-        masks_val = torch.ones(len(complete_dataset.dataset_val), *complete_dataset.dim_input)
-        masks_test = torch.ones(len(complete_dataset.dataset_test), *complete_dataset.dim_input)
+        masks_train = torch.ones(len(complete_dataset.dataset_train), *complete_dataset.get_dim_input())
+        masks_val = torch.ones(len(complete_dataset.dataset_val), *complete_dataset.get_dim_input())
+        masks_test = torch.ones(len(complete_dataset.dataset_test), *complete_dataset.get_dim_input())
     
 
 
@@ -63,8 +63,8 @@ def create_mask_dataset(
     complete_dataset_masked = CompleteDatasets(dataset_train=dataset_train,
                                                 dataset_test=dataset_test,
                                                 dataset_val=dataset_val,
-                                                dim_input=complete_dataset.dim_input,
-                                                dim_output=complete_dataset.dim_output,
+                                                dim_input=complete_dataset.get_dim_input(),
+                                                dim_output=complete_dataset.get_dim_output(),
                                                 parameters=param)
 
     

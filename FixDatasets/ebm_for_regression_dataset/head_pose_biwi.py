@@ -15,9 +15,6 @@ class DatasetTrainAug(torch.utils.data.Dataset):
     def __init__(self, imgs, poses):
         self.imgs = imgs
         self.poses = poses
-        print (self.poses.shape)
-        print (self.imgs.shape)
-
         self.crop_size = 64
 
         self.num_examples = self.imgs.shape[0]
@@ -119,8 +116,6 @@ class DatasetTest(torch.utils.data.Dataset):
         self.imgs = imgs # (shape: (5065, 64, 64, 3))
         self.poses = poses # (shape: (5065, 3)) (Yaw, Pitch, Roll)
 
-        print (self.poses.shape)
-        print (self.imgs.shape)
 
         self.num_examples = self.imgs.shape[0]
 

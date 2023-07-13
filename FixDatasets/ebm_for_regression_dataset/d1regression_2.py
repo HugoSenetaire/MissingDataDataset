@@ -10,9 +10,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-import math
-import scipy.stats
-from torch.utils.data.dataset import TensorDataset
+from ...complete_dataset import DictTensorDataset
 import pickle
 
 def predump(root_dir):
@@ -142,9 +140,9 @@ class d1Regression_2():
         with open(y_test_path, "rb") as file:
             self.y_test = pickle.load(file)
 
-        self.dataset_train = TensorDataset(torch.from_numpy(self.x_train).float(),torch.from_numpy(self.y_train).float())
-        self.dataset_val = TensorDataset(torch.from_numpy(self.x_val).float(),torch.from_numpy(self.y_val).float())
-        self.dataset_test = TensorDataset(torch.from_numpy(self.x_test).float(), torch.from_numpy(self.y_test).float())
+        self.dataset_train = DictTensorDataset(torch.from_numpy(self.x_train).float(),torch.from_numpy(self.y_train).float())
+        self.dataset_val = DictTensorDataset(torch.from_numpy(self.x_val).float(),torch.from_numpy(self.y_val).float())
+        self.dataset_test = DictTensorDataset(torch.from_numpy(self.x_test).float(), torch.from_numpy(self.y_test).float())
       
     def get_dim_input(self,):
         return (1,1)
