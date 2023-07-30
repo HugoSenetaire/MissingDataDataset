@@ -22,6 +22,9 @@ class DatasetEncapsulator(Dataset):
     def __getitem__(self, index):
         output = self.dataset[index]
         return {"data": output[0].reshape(self.input_size), "target": output[1]}
+    
+    def __len__(self,):
+        return len(self.dataset)
 
 
 class DictTensorDataset(TensorDataset):
@@ -43,6 +46,10 @@ class DictTensorDataset(TensorDataset):
     def __getitem__(self, index):
         tensors = super().__getitem__(index)
         return {"data": tensors[0].reshape((-1, *self.input_size)), "target": tensors[1]}
+    
+    def __len__(self,):
+        return super().__len__()
+    
 
 class CompleteDatasets():
     '''
