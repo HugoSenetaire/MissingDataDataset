@@ -16,15 +16,21 @@ def logit(x, alpha=1e-6):
     x = x * (1 - 2 * alpha) + alpha
     return torch.log(x) - torch.log(1 - x)
 
+def to_01(x, ):
+    return x * (255. / 256.) + (torch.rand_like(x) / 256.)
+
+def to_binary(x, ):
+    return (x > 0.5).float()
+
 
 transform_logit = torchvision.transforms.Compose([
                                     torchvision.transforms.ToTensor(),  
-                                    lambda x: x * (255. / 256.) + (torch.rand_like(x) / 256.),
+                                    to_01,
                                     logit,])
 
 transform_binary = torchvision.transforms.Compose([
                                     torchvision.transforms.ToTensor(),
-                                    lambda x: (x > 0.5).float(),])
+                                    to_binary,])
 
 
 
