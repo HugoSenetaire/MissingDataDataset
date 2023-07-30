@@ -17,5 +17,5 @@ fix_dataset_dict = {**CLASSIC_IMAGE_DATASETS, **EBM_FOR_REGRESSION_DATASETS, **d
 def get_fix_dataset(args_dict):
     dataset_name = args_dict["dataset_name"]
     current_dataset = fix_dataset_dict[dataset_name]
-    complete_dataset = current_dataset(root_dir = args_dict["root"], **args_dict["dataset_parameters"])
+    complete_dataset = current_dataset(root_dir = args_dict["root"], **args_dict)
     return complete_dataset
