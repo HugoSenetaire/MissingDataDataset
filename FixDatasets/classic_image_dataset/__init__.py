@@ -1,7 +1,12 @@
 from .CIFAR10 import CIFAR10
 from .CIFAR100 import CIFAR100
-from .MNIST import MNIST, MNISTLogitTransformed, BinaryMNIST
-from .FashionMNIST import FashionMNIST, FashionMNISTLogitTransformed, BinaryFashionMNIST
+from .FashionMNIST import BinaryFashionMNIST, FashionMNIST, FashionMNISTLogitTransformed
+from .MNIST import (
+    MNIST,
+    BinaryMNIST,
+    MNISTLogitTransformed,
+    MNISTLogitTransformedPadded32,
+)
 from .SVHN import SVHN
 
 CLASSIC_IMAGE_DATASETS = {
@@ -14,4 +19,5 @@ CLASSIC_IMAGE_DATASETS = {
     "FashionMNISTLogitTransformed": FashionMNISTLogitTransformed,
     "BinaryFashionMNIST": BinaryFashionMNIST,
     "SVHN": SVHN,
+    "MNISTLogitTransformedPadded32": MNISTLogitTransformedPadded32,
 }
