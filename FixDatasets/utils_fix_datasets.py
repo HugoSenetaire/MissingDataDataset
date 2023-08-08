@@ -1,9 +1,8 @@
 
 from .classic_image_dataset import CLASSIC_IMAGE_DATASETS
-from .ebm_for_regression_dataset import EBM_FOR_REGRESSION_DATASETS
-from .discrete_datasets import dic_discrete_dataset
 from .dataset_from_maf import dic_maf_dataset, get_maf_dataset
-
+from .discrete_datasets import dic_discrete_dataset
+from .ebm_for_regression_dataset import EBM_FOR_REGRESSION_DATASETS
 
 liste_datasets = [CLASSIC_IMAGE_DATASETS, EBM_FOR_REGRESSION_DATASETS, dic_discrete_dataset, dic_maf_dataset,]
 
@@ -17,5 +16,8 @@ fix_dataset_dict = {**CLASSIC_IMAGE_DATASETS, **EBM_FOR_REGRESSION_DATASETS, **d
 def get_fix_dataset(args_dict):
     dataset_name = args_dict["dataset_name"]
     current_dataset = fix_dataset_dict[dataset_name]
-    complete_dataset = current_dataset(root_dir = args_dict["root"], **args_dict)
+    if dataset_name in dic_maf_dataset.keys():
+        complete_dataset = get_maf_dataset(dataset_name, args_dict["root"])
+    else :
+        complete_dataset = current_dataset(root_dir = args_dict["root"], **args_dict)
     return complete_dataset

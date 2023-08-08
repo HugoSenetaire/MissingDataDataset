@@ -1,9 +1,11 @@
-import pandas as pd
-import numpy as np
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 from .Util.util import *
-import os
+
 
 class GAS:
 
@@ -38,6 +40,7 @@ class GAS:
 def load_data(file):
 
     data = pd.read_pickle(file)
+    # data = np.load(file, allow_pickle=True)
     data.drop("Meth", axis=1, inplace=True)
     data.drop("Eth", axis=1, inplace=True)
     data.drop("Time", axis=1, inplace=True)
