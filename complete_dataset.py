@@ -50,7 +50,7 @@ class DictTensorDataset(TensorDataset):
     def __getitem__(self, index):
         tensors = super().__getitem__(index)
         return {
-            "data": tensors[0].reshape((-1, *self.input_size)),
+            "data": tensors[0].reshape(*self.input_size),
             "target": tensors[1],
         }
 
