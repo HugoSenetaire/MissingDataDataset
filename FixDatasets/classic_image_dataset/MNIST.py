@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import torchvision
 from torch.utils.data import random_split
+from functools import partial
 
 from ...complete_dataset import DatasetEncapsulator
 
@@ -21,8 +22,13 @@ def logit(x, alpha=1e-6):
 
 def to_01(
     x,
+    noise = True
 ):
-    return x * (255.0 / 256.0) + (torch.rand_like(x) / 256.0)
+    if noise :
+        return x * (255.0 / 256.0) + (torch.rand_like(x) / 256.0)
+    else :
+        return x * (255.0 / 256.0)
+
 
 
 def to_binary(
@@ -36,6 +42,15 @@ transform_logit = torchvision.transforms.Compose(
         torchvision.transforms.ToTensor(),
         to_01,
         logit,
+    ]
+)
+
+transform_padded32 = torchvision.transforms.Compose(
+    [
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Pad(2),
+        partial(to_01, noise=False),
+        torchvision.transforms.Normalize((.5), (.5)),
     ]
 )
 transform_logit_padded32 = torchvision.transforms.Compose(
@@ -149,6 +164,36 @@ class MNISTLogitTransformedPadded32(MNIST):
 
     def transform_back(self, x):
         return torch.sigmoid(x)
+
+
+class MNISTPadded32(MNIST):
+    def __init__(
+        self,
+        root_dir: str,
+        transform=transform_padded32,
+        target_transform=None,
+        download: bool = False,
+        seed=None,
+        input_size=(1, 32, 32),
+        **kwargs,
+    ):
+        super().__init__(
+            root_dir,
+            transform,
+            target_transform,
+            download,
+            seed,
+            input_size=input_size,
+            **kwargs,
+        )
+
+    def get_dim_input(
+        self,
+    ):
+        return (1, 32, 32)
+
+    def transform_back(self, x):
+        return x
 
 
 class BinaryMNIST(MNIST):

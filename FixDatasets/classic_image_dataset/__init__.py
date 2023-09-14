@@ -6,6 +6,7 @@ from .MNIST import (
     BinaryMNIST,
     MNISTLogitTransformed,
     MNISTLogitTransformedPadded32,
+    MNISTPadded32
 )
 from .SVHN import SVHN
 
@@ -20,4 +21,5 @@ CLASSIC_IMAGE_DATASETS = {
     "BinaryFashionMNIST": BinaryFashionMNIST,
     "SVHN": SVHN,
     "MNISTLogitTransformedPadded32": MNISTLogitTransformedPadded32,
+    "MNISTPadded32": MNISTPadded32,
 }
