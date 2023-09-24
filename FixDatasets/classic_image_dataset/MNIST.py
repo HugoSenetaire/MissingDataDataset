@@ -50,7 +50,6 @@ transform_padded32 = torchvision.transforms.Compose(
         torchvision.transforms.ToTensor(),
         torchvision.transforms.Pad(2),
         partial(to_01, noise=False),
-        torchvision.transforms.Normalize((.5), (.5)),
     ]
 )
 transform_logit_padded32 = torchvision.transforms.Compose(
